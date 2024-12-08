@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+
 import { View, Text, StyleSheet } from 'react-native';
 import { 
     requestForegroundPermissionsAsync,
@@ -8,10 +9,21 @@ import {
     watchPositionAsync,
     LocationAccuracy
 } from 'expo-location'
+import MapViewDirections from 'react-native-maps-directions';
+import { Link } from 'expo-router';
 export default function Index() {
     const [location, setLocation] = useState<LocationObject | null>(null)
     
     const mapRef = useRef<MapView>(null)
+
+    const [collectLocation, setCollectLocation] = useState({
+        coords: {
+            latitude: -16.287964597271472, 
+            longitude: -48.943877567594626,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005
+        }
+    })
     
     async function requestLocationPermissions() {
         const { granted } = await requestForegroundPermissionsAsync()
@@ -25,7 +37,7 @@ export default function Index() {
         requestLocationPermissions()
     },[])
 
-    useEffect(() => {
+    /* useEffect(() => {
         watchPositionAsync({
             accuracy: LocationAccuracy.Highest,
             distanceInterval: 1000,
@@ -37,14 +49,17 @@ export default function Index() {
                 center: response.coords
             })
         })
-    })
+    }) */
 
     return (
         <View style={styles.container}>
+            <Link href="/gouvermentHome">Governo</Link>
+            <Link href="/addTrash">Casdastrar Lixo</Link>
             { location &&
             <MapView 
                 ref={mapRef}
                 style={styles.map}
+                provider={PROVIDER_GOOGLE}
                 initialRegion={{
                     latitude: location.coords.latitude,
                     longitude: location.coords.longitude,
@@ -54,10 +69,15 @@ export default function Index() {
                 showsUserLocation
                 showsMyLocationButton
             >
+                <MapViewDirections 
+                    origin={location.coords}
+                    destination={collectLocation.coords}
+                    apikey=''
+                />
                 <Marker 
                     coordinate={{
-                        latitude: location.coords.latitude,
-                        longitude: location.coords.longitude,
+                        latitude: collectLocation.coords.latitude,
+                        longitude: collectLocation.coords.longitude
                     }}
                 />
             </MapView>

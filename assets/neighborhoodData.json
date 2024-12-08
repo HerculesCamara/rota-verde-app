@@ -1,0 +1,14 @@
+[
+    {
+      "nome": "Bairro 1",
+      "porcentagemColetas": 75
+    },
+    {
+      "nome": "Bairro 2",
+      "porcentagemColetas": 50
+    },
+    {
+      "nome": "Bairro 3",
+      "porcentagemColetas": 90
+    }
+  ]
