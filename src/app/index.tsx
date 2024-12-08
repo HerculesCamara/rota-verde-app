@@ -1,102 +1,59 @@
-import { useEffect, useRef, useState } from 'react';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-
-import { View, Text, StyleSheet } from 'react-native';
-import { 
-    requestForegroundPermissionsAsync,
-    getCurrentPositionAsync,
-    LocationObject,
-    watchPositionAsync,
-    LocationAccuracy
-} from 'expo-location'
-import MapViewDirections from 'react-native-maps-directions';
 import { Link } from 'expo-router';
+import { View, Text, StyleSheet, Alert, Button, TouchableOpacity } from 'react-native';
+import { Octicons } from "@expo/vector-icons";
+import { LinearGradient } from 'react-native-linear-gradient';
+import BottomTabMenu from '@/components/bottomTabMenu';
+
 export default function Index() {
-    const [location, setLocation] = useState<LocationObject | null>(null)
-    
-    const mapRef = useRef<MapView>(null)
-
-    const [collectLocation, setCollectLocation] = useState({
-        coords: {
-            latitude: -16.287964597271472, 
-            longitude: -48.943877567594626,
-            latitudeDelta: 0.005,
-            longitudeDelta: 0.005
-        }
-    })
-    
-    async function requestLocationPermissions() {
-        const { granted } = await requestForegroundPermissionsAsync()
-        if (granted) {
-            const currentPosition = await getCurrentPositionAsync()
-            setLocation(currentPosition)
-        }
-    }
-
-    useEffect(() => {
-        requestLocationPermissions()
-    },[])
-
-    /* useEffect(() => {
-        watchPositionAsync({
-            accuracy: LocationAccuracy.Highest,
-            distanceInterval: 1000,
-            timeInterval: 10000,
-        }, (response) => {
-            setLocation(response)
-            mapRef.current?.animateCamera({
-                pitch: 70,
-                center: response.coords
-            })
-        })
-    }) */
-
     return (
-        <View style={styles.container}>
-            <Link href="/gouvermentHome">Governo</Link>
-            <Link href="/addTrash">Casdastrar Lixo</Link>
-            { location &&
-            <MapView 
-                ref={mapRef}
-                style={styles.map}
-                provider={PROVIDER_GOOGLE}
-                initialRegion={{
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005
-                }}
-                showsUserLocation
-                showsMyLocationButton
-            >
-                <MapViewDirections 
-                    origin={location.coords}
-                    destination={collectLocation.coords}
-                    apikey=''
-                />
-                <Marker 
-                    coordinate={{
-                        latitude: collectLocation.coords.latitude,
-                        longitude: collectLocation.coords.longitude
-                    }}
-                />
-            </MapView>
-            }
+        <View style={styles.wrapper}>
+            <View style={styles.container}>
+                <View>
+                    <Text style={styles.title}>PROCURAR COLETA?</Text>
+                    <TouchableOpacity style={styles.searchRoute}>
+                        <Link href="/navigationRoutesMap">
+                            <Octicons name="search" size={60} />
+                        </Link>
+                        <Text style={styles.label}>Sim</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+            <BottomTabMenu />
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
+    wrapper: {
+        flex: 1,
+    },
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#50B154',
         alignItems: 'center', 
         justifyContent: 'center'
     },
-    map: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
+    searchRoute: {
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 20,
+        padding: 20,
+        marginTop: 20,
+        borderStyle: 'solid',
+        borderWidth: 10,
+        borderColor: '#045630',
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10
+    },
+    label: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 10
     }
-
-})
+});
